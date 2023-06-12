@@ -1,0 +1,29 @@
+.UniversalElementEditorDrawer {
+  // transform: none !important;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  animation: animating-fade-in 0.5s ease-out;
+}
+
+.UniversalElementEditorDrawer-enterLoading {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.UniversalElementEditorDrawer-header {
+
+  .arco-typography-operation-edit {
+    color: var(--color-text-2) !important;
+  }
+
+}

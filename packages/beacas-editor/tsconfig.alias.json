@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "beacas-core": ["../beacas-core"],
+      "@beacas-editor/*": ["src/*"],
+    }
+  }
+}

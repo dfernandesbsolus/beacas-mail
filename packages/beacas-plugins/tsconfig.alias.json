@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "beacas-core": ["../beacas-core"],
+      "@beacas-core/*":["../beacas-core"],
+
+      "beacas-editor": ["../beacas-editor"],
+      "@beacas-editor/*":["../beacas-editor"],
+
+      "@beacas-plugins/*": ["src/*"],
+      "@beacas-plugins": ["src"],
+      "mjml-browser":["./node_modules/@types/mjml"]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+@import url("../../assets/styles/common.scss");
+
+[data-slate-dragover="true"] {
+  z-index: 2;
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    inset: 0px;
+    border-radius: 3px;
+    background: var(--drag-color);
+    z-index: 10;
+    left: 0;
+    height: 4px;
+    opacity: 1;
+  }
+}
+
+.element-dragover-placeholder-container {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+  * {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+}
+
+.element-dragover-placeholder {
+  position: fixed;
+  pointer-events: none;
+}
+
+[data-slate-block="section"] {
+}
+
+[data-slate-dragover-direction="top"][data-slate-dragover="true"] {
+  &::after {
+    top: 0px;
+  }
+}
+
+[data-slate-dragover-direction="bottom"][data-slate-dragover="true"] {
+  &::after {
+    top: auto;
+    bottom: 0px;
+  }
+}
+
+.text-empty {
+  &::before {
+    content: attr(placeholder);
+    position: absolute;
+    font-size: inherit;
+    white-space: nowrap;
+    pointer-events: none;
+    caret-color: rgb(55, 53, 47);
+    color: rgb(55, 53, 47);
+    -webkit-text-fill-color: rgba(55, 53, 47, 0.5);
+  }
+}

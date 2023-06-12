@@ -1,0 +1,31 @@
+[data-slate-block="page"] {
+  min-height: 300px;
+}
+
+[data-slate-hover="true"] {
+  z-index: 2;
+}
+[data-slate-focus="true"] {
+  z-index: 3;
+}
+[data-slate-selected="true"] {
+  z-index: 3;
+}
+
+.text-mergetag {
+  outline: 1px solid rgb(78, 89, 105);
+  outline-offset: 1px;
+  padding: 0 2px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.1s linear;
+  border: none;
+  font-weight: inherit;
+  outline-color: #00a0ac;
+  color: inherit;
+  background-color: #ebf9fc;
+  max-width: 10em;
+  font-style: inherit;
+  text-decoration-line: inherit;
+  position: relative;
+}

@@ -1,0 +1,3 @@
+[submodule "beacas-demo"]
+	path = beacas-demo
+	url = git@github.com:beacas-team/beacas-demo.git

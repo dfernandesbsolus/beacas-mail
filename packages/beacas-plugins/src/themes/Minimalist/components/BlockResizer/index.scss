@@ -1,0 +1,46 @@
+[data-slate-type="standard-column"]:nth-child(n + 2) :hover {
+  .beacas-block-resizer {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+.beacas-block-resizer-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+}
+
+.beacas-block-resizer {
+  pointer-events: auto;
+
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11;
+
+  transition: opacity 300ms ease-in 0s;
+
+  .beacas-block-resizer-scrollbar {
+    border-radius: 20px;
+    background: rgba(15, 15, 15, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    width: 6px;
+    height: 48px;
+    max-height: 50%;
+  }
+
+  .beacas-block-resizer-scrollbar-horizontal {
+    border-radius: 20px;
+    background: rgba(15, 15, 15, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    height: 6px;
+    // width: 100%;
+    width: 48px;
+    max-width: 50%;
+  }
+}

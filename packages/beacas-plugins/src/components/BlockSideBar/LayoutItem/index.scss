@@ -1,0 +1,35 @@
+.LayoutItemList * {
+  box-sizing: border-box;
+
+  .LayoutItem {
+    position: relative;
+    cursor: grab;
+    color: rgb(85, 85, 85);
+    background-color: #fff;
+
+    .LayoutItemOuter {
+      position: relative;
+      width: 100%;
+      z-index: 1;
+      padding: 10px;
+      border: 1px solid rgb(229, 229, 229);
+      &:hover {
+        box-shadow: inset 0px 0px 2px #ccc;
+      }
+    }
+    .LayoutItemInner {
+      height: 36px;
+      border: 1px solid rgb(85, 85, 85);
+      border-radius: 3px;
+      overflow: hidden;
+      display: flex;
+    }
+    .LayoutItemInnerPart {
+      border-right: 1px solid rgb(85, 85, 85);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

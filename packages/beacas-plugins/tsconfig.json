@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "types": ["vite/client","node"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "alwaysStrict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "jsx": "react",
+    "outDir": "lib/typings",
+    "baseUrl": ".",
+    "paths": {
+      "beacas-core": ["../beacas-core/src"],
+      "@beacas-core/*": ["../beacas-core/src/*"],
+      "@beacas-core": ["./beacas-core/src"],
+
+      "beacas-editor": ["../beacas-editor/src"],
+      "@beacas-editor/*": ["../beacas-editor/src/*"],
+      "@beacas-editor": ["./beacas-editor/src"],
+
+
+      "@beacas-plugins/*": ["src/*"],
+      "@beacas-plugins": ["src"],
+
+      "mjml-browser":["./node_modules/@types/mjml"]
+    }
+  },
+  "include": ["./src"]
+}

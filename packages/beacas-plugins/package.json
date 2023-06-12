@@ -1,0 +1,43 @@
+{
+  "name": "beacas-plugins",
+  "version": "0.7.0",
+  "description": "",
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/typings/index.d.ts",
+  "scripts": {
+    "build": "vite build && npm run typings",
+    "typings": "tsc --declaration --emitDeclarationOnly --project tsconfig.alias.json && tsc-alias -p tsconfig.alias.json",
+    "lint": "eslint --fix --ext .tsx,.ts src/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/gif.js": "^0.2.2",
+    "axios": "^1.2.2",
+    "color": "^4.2.3",
+    "gif.js": "^0.2.0",
+    "he": "^1.2.0",
+    "html2canvas": "^1.4.1",
+    "is-hotkey": "^0.2.0",
+    "lodash": "^4.17.21",
+    "mobx": "^6.7.0",
+    "mobx-react": "^7.6.0",
+    "monaco-editor": "^0.36.1",
+    "overlayscrollbars": "^1.13.2",
+    "overlayscrollbars-react": "^0.3.0",
+    "react-beautiful-dnd": "^13.1.1"
+  },
+  "peerDependencies": {
+    "@arco-design/web-react": "^2.46.3",
+    "mjml-browser": "^4.14.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/mjml": "^4.7.0"
+  }
+}

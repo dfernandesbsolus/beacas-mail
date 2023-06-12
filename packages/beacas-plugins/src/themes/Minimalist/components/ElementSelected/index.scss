@@ -1,0 +1,13 @@
+[data-slate-selected="true"][data-slate-block="image"] {
+  td table td {
+    &:before {
+      position: absolute;
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(35, 131, 226, 0.28);
+      z-index: 10;
+    }
+  }
+}

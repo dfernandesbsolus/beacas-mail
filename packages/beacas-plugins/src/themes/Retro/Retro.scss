@@ -1,0 +1,139 @@
+@import url("../../assets/styles/common.scss");
+
+body .element-tools-container {
+  outline: 2px solid var(--hover-color);
+  .element-tools {
+    color: #fff;
+    background-color: var(--hover-color);
+  }
+  .element-drag-button {
+    background-color: var(--hover-color);
+  }
+}
+
+[data-slate-dragover="true"] {
+  z-index: 2;
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    inset: 0px;
+    border-radius: 3px;
+    background: var(--drag-color);
+    z-index: 10;
+    left: 0;
+    height: 4px;
+    opacity: 1;
+  }
+}
+
+[data-slate-dragging="true"] .element-tools-container {
+  opacity: 0;
+}
+
+[data-slate-dragover-direction="top"][data-slate-dragover="true"] {
+  &::after {
+    top: 0px;
+  }
+}
+
+[data-slate-dragover-direction="bottom"][data-slate-dragover="true"] {
+  &::after {
+    top: auto;
+    bottom: 0px;
+  }
+}
+
+[data-slate-dragover-direction="middle"][data-slate-dragover="true"] {
+  outline: 2px dashed var(--drag-color);
+  z-index: 2;
+  &::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    inset: 0px;
+    border-radius: 3px;
+    background: var(--drag-color);
+    z-index: 1;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    filter: opacity(10%);
+  }
+
+  [data-slate-type="placeholder"] {
+    outline: none;
+  }
+}
+
+[data-slate-type="placeholder"] {
+  min-height: 64px;
+  position: relative;
+  background-color: rgba(242, 244, 245, 0.64);
+  outline: rgb(43, 152, 211) dashed 1px;
+  outline-offset: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgb(48, 59, 67);
+  margin: 0 20px;
+}
+
+[data-slate-type="placeholder"] .element-delete {
+  border-radius: 2px;
+  padding: 0px;
+  cursor: pointer;
+  height: 28px;
+  width: 28px;
+  background-color: rgb(223, 227, 230);
+  color: rgb(96, 106, 114);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+[data-slate-type="placeholder"] .element-delete:hover {
+  background-color: rgb(180, 187, 195);
+}
+
+[data-slate-type="placeholder"] .element-delete svg {
+  width: 20px;
+  height: 20px;
+}
+
+[data-slate-universal-editing="true"] {
+  z-index: 2;
+}
+[data-slate-universal-editing="true"] .universal-element-editing-mask {
+  z-index: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0px;
+
+  &::before {
+    content: " ";
+    width: 10000px;
+    height: 10000px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+  }
+  &::after {
+    position: absolute;
+    content: " ";
+    width: 100%;
+    height: 100%;
+    inset: 0px;
+    pointer-events: none;
+    outline: 9999px solid rgba(255, 255, 255, 0.6);
+  }
+}

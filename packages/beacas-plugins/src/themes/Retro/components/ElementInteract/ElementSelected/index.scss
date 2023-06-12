@@ -1,0 +1,23 @@
+[data-slate-selected="true"],
+[data-slate-hover="true"] [data-slate-selected="true"] {
+  .element-tools-container {
+    outline: 2px solid var(--selected-color);
+    .element-tools {
+      color: #fff;
+      background-color: var(--selected-color);
+    }
+    .element-drag-button {
+      background-color: var(--selected-color);
+    }
+  }
+}
+
+[data-slate-block="page"][data-slate-selected="true"]
+  > .element-tools-container {
+  .element-tools {
+    display: none;
+  }
+  .element-drag-button {
+    display: none;
+  }
+}

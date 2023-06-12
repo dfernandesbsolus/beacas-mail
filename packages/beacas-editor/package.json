@@ -1,0 +1,33 @@
+{
+  "name": "beacas-editor",
+  "version": "0.7.0",
+  "description": "",
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/typings/index.d.ts",
+  "scripts": {
+    "build": "vite build && npm run typings",
+    "typings": "tsc --declaration --emitDeclarationOnly --project tsconfig.alias.json && tsc-alias -p tsconfig.alias.json",
+    "lint": "eslint --fix --ext .tsx,.ts src/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.2",
+    "color": "^4.2.3",
+    "he": "^1.2.0",
+    "is-hotkey": "^0.2.0",
+    "lodash": "^4.17.21",
+    "overlayscrollbars": "^1.13.2",
+    "overlayscrollbars-react": "^0.3.0",
+    "parse5": "^7.1.2",
+    "react-attr-converter": "^0.3.1"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
