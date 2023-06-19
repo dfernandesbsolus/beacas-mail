@@ -17,6 +17,7 @@ export interface EditorContextProps {
     React.SetStateAction<Omit<EmailTemplate, "content">>
   >;
   inited: boolean;
+  hasAuth: boolean;
   mergetagsData: Record<string, any>;
   setMergetagsData: React.Dispatch<React.SetStateAction<Record<string, any>>>;
   submit: () => void;
@@ -46,7 +47,7 @@ export const EditorContextProvider: React.FC<EmailEditorProps> = (props) => {
   const [values, setValues] = useState<Omit<EmailTemplate, "content">>(
     props.initialValues
   );
-  const { loading } = useEditorProps();
+  const { loading, clientId } = useEditorProps();
   const [mergetagsData, setMergetagsData] = useState<
     EditorContextProps["mergetagsData"]
   >({});
@@ -77,9 +78,18 @@ export const EditorContextProvider: React.FC<EmailEditorProps> = (props) => {
 
   useEffect(() => {
     BeacasCore.awaitInit().then(() => {
-      setHasAuth(true);
+      const timer = setTimeout(() => {
+        setHasAuth(true);
+      }, 100);
+      return () => timer && clearTimeout(timer);
     });
   }, []);
+
+  useEffect(() => {
+    BeacasCore.auth({
+      clientId: clientId || null,
+    });
+  }, [clientId]);
 
   const data: EditorContextProps = useMemo(() => {
     const adapterValues = { ...values, content: pageElement } as EmailTemplate;
@@ -97,8 +107,9 @@ export const EditorContextProvider: React.FC<EmailEditorProps> = (props) => {
       submit() {
         props.onSubmit?.(adapterValues);
       },
+      hasAuth,
     };
-  }, [values, pageElement, mergetagsData, inited, props]);
+  }, [values, pageElement, mergetagsData, inited, hasAuth, props]);
 
   return useMemo(() => {
     if (!hasAuth) return <>{loading ? loading : null}</>;

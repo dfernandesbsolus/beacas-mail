@@ -5,6 +5,7 @@ export const getElementPageLayout = (params: {
   editor: CustomSlateEditor;
   overlayElement: HTMLElement;
   relativedElement: HTMLElement | Range;
+  overlayElementHeight?: number;
 }) => {
   const contentWindow = ReactEditor.getWindow(params.editor);
   const iframe = [...document.querySelectorAll("iframe")].find(
@@ -15,17 +16,18 @@ export const getElementPageLayout = (params: {
   const relativedElementReact = params.relativedElement.getBoundingClientRect();
   const overlayRect = params.overlayElement.getBoundingClientRect();
   const iframeRect = iframe.getBoundingClientRect();
-
+  const overlayRectHeight = params.overlayElementHeight || overlayRect.height;
   const top =
-    overlayRect.height +
+    overlayRectHeight +
     relativedElementReact.height +
     relativedElementReact.top;
 
   const edge = 20;
 
   const isBottomEnough = document.documentElement.clientHeight > top + edge;
+
   const isTopEnough =
-    iframeRect.top + relativedElementReact.top - overlayRect.height > edge;
+    iframeRect.top + relativedElementReact.top - overlayRectHeight > edge;
 
   return {
     pageXOffset: iframeRect.left + relativedElementReact.left,
@@ -35,5 +37,6 @@ export const getElementPageLayout = (params: {
     iframeRect,
     relativedElementReact,
     overlayRect,
+    overlayRectHeight,
   };
 };

@@ -73,31 +73,32 @@ export const InteractProvider: React.FC<{
   const setSelectedNodePathHandler = useEventCallback((path?: Path | null) => {
     if (readOnly) return;
     if (lock) return;
-    if (path) {
-      const elementEntry = Editor.above(editor, {
-        match: NodeUtils.isElement,
-      });
-
-      const isSelfOrParent =
-        elementEntry &&
-        (Path.equals(elementEntry[1], path) ||
-          Path.isParent(path, elementEntry[1]));
-
-      if (!elementEntry || !isSelfOrParent) {
-        Transforms.deselect(editor);
-        // Transforms.select(editor, path);
-      }
-    } else {
+    if (!path) {
       Transforms.deselect(editor);
-    }
-    setTimeout(() => {
-      setSelectedNodePath((oldPath) => {
-        if (!path) return null;
-        if (oldPath && Path.equals(oldPath, path)) return oldPath;
-
-        return path;
+    } else {
+      const node = Node.get(editor, path);
+      const end = Editor.end(editor, path);
+      const isUnsetElement = Editor.above(editor, {
+        at: end,
+        match(node) {
+          return NodeUtils.isUnsetElement(node);
+        },
       });
-    }, 0);
+
+      if (isUnsetElement) {
+        Transforms.deselect(editor);
+      } else if (!editor.selection && NodeUtils.isContentElement(node)) {
+        const range = { anchor: end, focus: end };
+        Transforms.select(editor, range);
+      }
+    }
+
+    setSelectedNodePath((oldPath) => {
+      if (!path) return null;
+      if (oldPath && Path.equals(oldPath, path)) return oldPath;
+
+      return path;
+    });
   });
 
   const setHoverNodePathHandle = useEventCallback(

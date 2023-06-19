@@ -84,7 +84,7 @@ export const withBeacas = (
     return null;
   };
 
-  editor.getSelectedNode = () => {
+  editor.getSelectedBlockElement = () => {
     const [nodeEntry] = Editor.nodes(editor, {
       at: editor.selection?.anchor.path,
       match: NodeUtils.isBlockElement,
@@ -107,24 +107,40 @@ export const withBeacas = (
   };
 
   editor.insertNewLine = (options) => {
-    const elementEntry = Editor.above(editor, {
-      match(node, path) {
-        return NodeUtils.isElement(node);
-      },
-      mode: "lowest",
-      at: options?.path,
-    });
+    let element: Element | null = null;
+    if (options?.path) {
+      element = Node.get(editor, options.path) as Element;
+    }
 
-    const element = elementEntry?.[0] as Element;
+    if (!element) {
+      const elementEntry = Editor.above(editor, {
+        match(node, path) {
+          return NodeUtils.isElement(node);
+        },
+        mode: "lowest",
+        at: options?.path,
+      });
+      element = elementEntry?.[0] as Element;
+    }
+
     if (!element) return;
 
     if (NodeUtils.isContentElement(element)) {
-      Transforms.insertNodes(editor, {
-        type: StandardType.STANDARD_PARAGRAPH,
-        attributes: {},
-        data: {},
-        children: [{ text: "" }],
-      });
+      Transforms.insertNodes(
+        editor,
+        {
+          type: StandardType.STANDARD_PARAGRAPH,
+          attributes: {},
+          data: {},
+          children: [{ text: "" }],
+        },
+        { at: options?.path }
+      );
+      if (options?.path) {
+        Transforms.select(editor, Editor.end(editor, options.path));
+        const at = Editor.end(editor, options.path);
+        Transforms.setSelection(editor, { anchor: at, focus: at });
+      }
     }
   };
 
@@ -493,13 +509,9 @@ export const withBeacas = (
 
   editor.replaceNode = (options) => {
     Editor.withoutNormalizing(editor, () => {
-      let targetPath = options.path;
-      let node = Node.get(editor, targetPath);
-      if (Text.isText(node)) {
-        const parent = Editor.parent(editor, targetPath);
-        node = parent[0];
-        targetPath = parent[1];
-      }
+      const targetPath = options.path;
+      const node = Node.get(editor, targetPath);
+
       apply({
         type: "insert_node",
         path: Path.next(targetPath),
@@ -511,7 +523,16 @@ export const withBeacas = (
         node: node,
       });
       const at = Editor.end(editor, targetPath);
-      Transforms.setSelection(editor, { anchor: at, focus: at });
+      const isUnsetElement = Editor.above(editor, {
+        at,
+        match: NodeUtils.isUnsetElement,
+      });
+
+      if (isUnsetElement) {
+        Transforms.deselect(editor);
+      } else {
+        Transforms.setSelection(editor, { anchor: at, focus: at });
+      }
     });
   };
 

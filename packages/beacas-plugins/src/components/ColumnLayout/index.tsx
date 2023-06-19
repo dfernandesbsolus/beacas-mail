@@ -1,6 +1,6 @@
 import { Radio } from "@arco-design/web-react";
 import React, { useEffect, useRef, useState } from "react";
-import stylesText from "./index.scss?inline";
+import "./index.scss";
 import { LayoutItemList } from "./LayoutItemList";
 
 const columnsOptions = [
@@ -91,7 +91,6 @@ export const ColumnLayout = ({
         onSelect={setColumnLayoutIndex}
         selectedIndex={columnLayoutIndex}
       />
-      <style>{stylesText}</style>
     </div>
   );
 };

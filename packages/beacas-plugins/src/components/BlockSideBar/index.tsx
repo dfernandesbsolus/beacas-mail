@@ -7,7 +7,11 @@ import { classnames, t } from "beacas-core";
 import { BlocksPanel } from "./BlocksPanel";
 import { AttributePanel } from "../ConfigurationPanel/components/AttributePanel";
 import { ConfigurationDrawer } from "../ConfigurationDrawer";
-import { useEditorState, useSelectedNode } from "beacas-editor";
+import {
+  useEditorContext,
+  useEditorState,
+  useSelectedNode,
+} from "beacas-editor";
 import { SharedComponents } from "..";
 
 export interface BlockSideBarProps {
@@ -17,6 +21,8 @@ export interface BlockSideBarProps {
 export const BlockSideBar = ({ height }: BlockSideBarProps) => {
   const { setSelectedNodePath, selectedNodePath, universalElementEditing } =
     useEditorState();
+
+  const { hasAuth } = useEditorContext();
   const { selectedNode } = useSelectedNode();
   const [activeTab, setActiveTab] = useState("Content");
 
@@ -40,6 +46,8 @@ export const BlockSideBar = ({ height }: BlockSideBarProps) => {
       setSelectedNodePath(null);
     }
   }, [selectedNode, selectedNodePath, setSelectedNodePath]);
+
+  if (!hasAuth) return null;
 
   if (universalElementEditing) {
     return (

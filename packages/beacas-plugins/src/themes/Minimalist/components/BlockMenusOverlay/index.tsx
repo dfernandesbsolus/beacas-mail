@@ -1,11 +1,18 @@
-import { useRefState } from "beacas-editor";
+import { useEventCallback, useRefState, useSelectedNode } from "beacas-editor";
 import { flatMap } from "lodash";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { Transforms, Editor } from "slate";
-import { ReactEditor, useSlateStatic } from "slate-react";
+import { ReactEditor, useSlate } from "slate-react";
 import styleText from "./BlockMenusOverlay.scss?inline";
-import { Element, classnames, ElementType, StandardType, t } from "beacas-core";
+import {
+  Element,
+  classnames,
+  ElementType,
+  StandardType,
+  t,
+  BlockManager,
+} from "beacas-core";
 import { getElementPageLayout } from "@beacas-plugins/utils/getElementPageLayout";
 import { store } from "@beacas-plugins/store";
 import paragraphIcon from "@beacas-plugins/assets/images/elements/paragraph.png";
@@ -15,6 +22,8 @@ import heading3 from "@beacas-plugins/assets/images/elements/heading3.png";
 import image from "@beacas-plugins/assets/images/elements/image.png";
 import button from "@beacas-plugins/assets/images/elements/button.png";
 import column from "@beacas-plugins/assets/images/elements/column.png";
+import dividerIcon from "@beacas-plugins/assets/images/elements/divider.png";
+import spacerIcon from "@beacas-plugins/assets/images/elements/spacer.png";
 
 const options: {
   title: string;
@@ -117,6 +126,170 @@ const options: {
       },
       {
         get title() {
+          return t("Social");
+        },
+        get content() {
+          return t("Social media display");
+        },
+        image: button,
+        payload: {
+          type: "standard-social",
+          data: {},
+          attributes: {
+            "icon-size": "30px",
+            spacing: "20px",
+          },
+          children: [
+            {
+              data: {},
+              type: "standard-social-element",
+              children: [
+                {
+                  text: "",
+                },
+              ],
+              attributes: {
+                src: "https://res.cloudinary.com/dfite2e16/image/upload/v1681908489/clgnivsuj0018z9ltiixmxf6k/xkd0kfnytbfywsofk8t6.png",
+                href: "",
+                "padding-left": "0px",
+                "padding-right": "0px",
+                "padding-top": "0px",
+                "padding-bottom": "0px",
+              },
+            },
+            {
+              data: {},
+              type: "standard-social-element",
+              children: [
+                {
+                  text: "",
+                },
+              ],
+              attributes: {
+                src: "https://res.cloudinary.com/dfite2e16/image/upload/v1681908521/clgnivsuj0018z9ltiixmxf6k/ulyduaza1votoacctoi3.png",
+                href: "",
+                "padding-left": "20px",
+                "padding-right": "0px",
+                "padding-top": "0px",
+                "padding-bottom": "0px",
+              },
+            },
+            {
+              data: {},
+              type: "standard-social-element",
+              children: [
+                {
+                  text: "",
+                },
+              ],
+              attributes: {
+                src: "https://res.cloudinary.com/dfite2e16/image/upload/v1681908543/clgnivsuj0018z9ltiixmxf6k/wtefhsfwaapcdbz7knqw.png",
+                href: "",
+                "padding-left": "20px",
+                "padding-right": "0px",
+                "padding-top": "0px",
+                "padding-bottom": "0px",
+              },
+            },
+          ],
+        } as Element,
+      },
+      {
+        get title() {
+          return t("Navbar");
+        },
+        get content() {
+          return t("Navigation bar");
+        },
+        image: button,
+        payload: {
+          type: ElementType.STANDARD_NAVBAR,
+          children: [
+            {
+              data: {},
+              type: "standard-navbar-link",
+              children: [
+                {
+                  text: "Shop",
+                },
+              ],
+              attributes: {
+                href: "",
+                "font-size": "20px",
+              },
+            },
+            {
+              data: {},
+              type: "standard-navbar-link",
+              children: [
+                {
+                  text: "About",
+                },
+              ],
+              attributes: {
+                href: "",
+                "font-size": "20px",
+              },
+            },
+            {
+              data: {},
+              type: "standard-navbar-link",
+              children: [
+                {
+                  text: "Contact",
+                },
+              ],
+              attributes: {
+                href: "",
+                "font-size": "20px",
+              },
+            },
+            {
+              data: {},
+              type: "standard-navbar-link",
+              children: [
+                {
+                  text: "Blog",
+                },
+              ],
+              attributes: {
+                href: "",
+                "font-size": "20px",
+              },
+            },
+          ],
+        } as Element,
+      },
+      {
+        get title() {
+          return t("Divider");
+        },
+        get content() {
+          return t("Visually divide blocks.");
+        },
+        image: dividerIcon,
+        payload: {
+          type: ElementType.STANDARD_DIVIDER,
+          children: [{ text: "123" }],
+        } as Element,
+      },
+      {
+        get title() {
+          return t("Spacer");
+        },
+        get content() {
+          return t(
+            "A piece of material used to create a space between two element."
+          );
+        },
+        image: spacerIcon,
+        payload: {
+          type: ElementType.SPACER,
+          children: [{ text: "" }],
+        } as Element,
+      },
+      {
+        get title() {
           return t("Column");
         },
         get content() {
@@ -142,7 +315,8 @@ export const BlockMenusOverlay = observer(() => {
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRefState(selectedIndex);
-  const editor = useSlateStatic();
+  const editor = useSlate();
+  const { selectedNodePath } = useSelectedNode();
 
   useEffect(() => {
     const doc = ReactEditor.findDocumentOrShadowRoot(editor);
@@ -181,40 +355,44 @@ export const BlockMenusOverlay = observer(() => {
     } catch (error) {}
   });
 
-  const onChooseItem = useCallback(
-    (node: Element) => {
-      const focus = editor.selection?.focus;
-      if (!focus) return;
-      const text = Editor.string(editor, focus.path);
-      const index = text.lastIndexOf("/");
-      const isEmptyText =
-        !text || text.length === text.substring(index, focus.offset).length;
+  const onChooseItem = useEventCallback((node: Element) => {
+    const focus = editor.selection?.focus;
+    if (!focus || !selectedNodePath) return;
+    const text = Editor.string(editor, focus.path);
+    const index = text.lastIndexOf("/");
+    const isEmptyText =
+      !text || text.length === text.substring(index, focus.offset).length;
 
-      const range = {
-        anchor: { path: focus.path, offset: index },
-        focus: { path: focus.path, offset: focus.offset },
-      };
+    const range = {
+      anchor: { path: focus.path, offset: index },
+      focus: { path: focus.path, offset: focus.offset },
+    };
 
-      Transforms.delete(editor, { at: range });
-      if (!editor.selection) return;
+    Transforms.delete(editor, { at: range });
+    if (!editor.selection) return;
 
-      if (node.type === StandardType.STANDARD_COLUMN) {
-        store.ui.serColumnsOverlayVisible(true);
+    if (!node.children || node.children.length === 0) {
+      node.children = [{ text: "" }];
+    }
+
+    const elementDefinition = BlockManager.getBlockByType(node.type);
+    const element = elementDefinition.create(node as any);
+
+    if (node.type === StandardType.STANDARD_COLUMN) {
+      store.ui.serColumnsOverlayVisible(true);
+    } else {
+      if (isEmptyText) {
+        editor.replaceNode({
+          node: element,
+          path: selectedNodePath,
+        });
       } else {
-        if (isEmptyText) {
-          editor.replaceNode({
-            node,
-            path: editor.selection.focus.path,
-          });
-        } else {
-          Transforms.insertNodes(editor, node as any);
-        }
+        Transforms.insertNodes(editor, element);
       }
+    }
 
-      store.ui.setBlockMenusOverlayVisible(false);
-    },
-    [editor]
-  );
+    store.ui.setBlockMenusOverlayVisible(false);
+  });
 
   const onSelectItem = useCallback(
     (ev: Event, node: Element) => {
@@ -237,9 +415,8 @@ export const BlockMenusOverlay = observer(() => {
   useEffect(() => {
     if (!visible) return;
 
-    const onMouseDown = (ev: KeyboardEvent) => {
+    const onKeydownDown = (ev: KeyboardEvent) => {
       const filterOptions = filterOptionsRef.current;
-
       if (ev.code === "ArrowDown") {
         ev.preventDefault();
         setSelectedIndex((oldIndex) => {
@@ -267,11 +444,11 @@ export const BlockMenusOverlay = observer(() => {
     const root = ReactEditor.getWindow(editor);
     root.addEventListener("mousedown", onBlur);
     // root.addEventListener("blur", onBlur);
-    root.addEventListener("keydown", onMouseDown);
+    root.addEventListener("keydown", onKeydownDown);
     return () => {
       root.removeEventListener("mousedown", onBlur);
       root.removeEventListener("blur", onBlur);
-      root.removeEventListener("keydown", onMouseDown);
+      root.removeEventListener("keydown", onKeydownDown);
     };
   }, [editor, filterOptionsRef, onSelectItem, selectedIndexRef, visible]);
 
@@ -325,7 +502,9 @@ export const BlockMenusOverlay = observer(() => {
                 className="list-item"
                 key={oIndex}
                 data-menu-index={oIndex}
-                onMouseEnter={() => setSelectedIndex(matchIndex)}
+                onMouseMove={() => {
+                  setSelectedIndex(matchIndex);
+                }}
                 onMouseDown={(ev) => onSelectItem(ev as any, option.payload)}
               >
                 <div

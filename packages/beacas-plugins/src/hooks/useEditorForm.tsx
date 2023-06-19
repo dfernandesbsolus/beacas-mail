@@ -22,18 +22,15 @@ export const useEditorForm = () => {
   const { form } = Form.useFormContext();
   const { universalElementSetting } = useEditorProps();
 
-  const getFieldValue = useCallback(
-    (path: Path, name: string) => {
-      try {
-        const node = Node.get(editor, path);
-        if (name === "") return node;
-        return get(node, name);
-      } catch (error) {
-        return undefined;
-      }
-    },
-    [editor]
-  );
+  const getFieldValue = useEventCallback((path: Path, name: string) => {
+    try {
+      const node = Node.get(editor, path);
+      if (name === "") return node;
+      return get(node, name);
+    } catch (error) {
+      return undefined;
+    }
+  });
 
   const getFieldDirty = useCallback(
     (path: Path, name: string) => {

@@ -6,11 +6,12 @@ import { t } from "beacas-core";
 import React, { useMemo } from "react";
 import { Path } from "slate";
 import { AttributeField } from ".";
-import { useSelectedNode } from "beacas-editor";
+import { ActiveTabKeys, useSelectedNode } from "beacas-editor";
 
 export function Columns(
   props: Omit<EnhancerProps, "label"> & {
     path: Path;
+    mode: ActiveTabKeys;
   }
 ) {
   const { setFieldValue } = useEditorForm();
@@ -24,7 +25,7 @@ export function Columns(
       <>
         <AttributeField.StackOnMobile path={props.path} />
 
-        {!disabled && (
+        {!disabled && props.mode === ActiveTabKeys.DESKTOP && (
           <AttributeField.PixelAndPercentField
             disabled={disabled}
             onChange={(value) => {
@@ -54,5 +55,5 @@ export function Columns(
         )}
       </>
     );
-  }, [props.path, disabled, setFieldValue]);
+  }, [props.path, props.mode, disabled, setFieldValue]);
 }

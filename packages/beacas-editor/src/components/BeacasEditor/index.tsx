@@ -85,6 +85,13 @@ const BeacasEditorContent: React.FC<{ children?: React.ReactNode }> = ({
 
         let voidEntry: [Node, Path] | undefined;
 
+        const isUnsetElementClicked = Boolean(
+          Editor.above(editor, {
+            at: elementPath,
+            match: (node) => NodeUtils.isUnsetElement(node),
+          })
+        );
+
         if (
           NodeUtils.isUniversalElement(element) ||
           NodeUtils.isVoidBlockElement(element)
@@ -136,7 +143,7 @@ const BeacasEditorContent: React.FC<{ children?: React.ReactNode }> = ({
         if (NodeUtils.isContentElement(element)) {
           const block = BlockManager.getBlockByType(element.type);
 
-          if (block.void || voidEntry) {
+          if (block.void || voidEntry || isUnsetElementClicked) {
             if (isPointerDownEvent) {
               ev.preventDefault();
               Transforms.deselect(editor);
@@ -159,7 +166,9 @@ const BeacasEditorContent: React.FC<{ children?: React.ReactNode }> = ({
           }
         }
         return elementPath;
-      } catch (error) {}
+      } catch (error) {
+        // console.log(error);
+      }
       return null;
     },
     [editor, universalElementEditingRef, universalElementPathRef]
@@ -177,7 +186,7 @@ const BeacasEditorContent: React.FC<{ children?: React.ReactNode }> = ({
     };
   }, [setHoverNodePath]);
 
-  const nodeEntry = editor.getSelectedNode();
+  const nodeEntry = editor.getSelectedBlockElement();
 
   useEffect(() => {
     if (!root || !editor.selection?.anchor.path) return;
@@ -193,29 +202,6 @@ const BeacasEditorContent: React.FC<{ children?: React.ReactNode }> = ({
       Transforms.select(editor, point);
     }
   }, [root, editor, nodeEntry]);
-
-  // useEffect(() => {
-  //   let path = nodeEntry?.[1];
-
-  //   if (!path) {
-  //     return;
-  //   }
-  //   const element = Node.get(editor, path);
-  //   if (NodeUtils.isTextListItemElement(element)) {
-  //     path = path.slice(0, path.length - 1);
-  //   }
-  //   const voidBlockElementEntry = Editor.above(editor, {
-  //     at: path,
-  //     match: (node) =>
-  //       NodeUtils.isBlockElement(node) &&
-  //       NodeUtils.isVoidBlockElement(node),
-  //   });
-  //   if (voidBlockElementEntry) {
-  //     setSelectedNodePath(voidBlockElementEntry[1]);
-  //   } else {
-  //     setSelectedNodePath(path);
-  //   }
-  // }, [editor, nodeEntry, setSelectedNodePath]);
 
   const onPointerDown = useCallback(
     (ev: React.PointerEvent) => {

@@ -13,7 +13,7 @@ export interface BeacasSlateEditor {
   replaceNode(options: { path: Path; node: Partial<Element> }): void;
   moveNode(options: { at: Path; to: Path }): void;
   getSelectionRect(): null | DOMRect;
-  getSelectedNode(): null | NodeEntry<Element>;
+  getSelectedBlockElement(): null | NodeEntry<Element>;
 }
 
 export type CustomSlateEditor = BaseEditor &

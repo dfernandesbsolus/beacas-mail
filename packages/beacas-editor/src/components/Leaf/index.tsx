@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   ReactEditor,
   RenderLeafProps,
-  useFocused,
   useSelected,
   useSlateStatic,
 } from "slate-react";
@@ -17,20 +16,18 @@ export const Leaf = (
     }
 ) => {
   const [isCompositionstart, setIsCompositionstart] = useState(false);
-  const focused = useFocused();
   const selected = useSelected();
   const editor = useSlateStatic();
   const isEmpty = props.text?.text.length === 0;
 
   const classNames = classnames(
-    focused && selected && isEmpty && !isCompositionstart ? "text-empty" : "",
+    selected && isEmpty && !isCompositionstart ? "text-empty" : "",
     props.contentUneditable && "text-uneditable"
   );
 
   useEffect(() => {
     if (!selected) return;
     const root = ReactEditor.findDocumentOrShadowRoot(editor);
-
     const compositionStart = () => {
       setIsCompositionstart(true);
     };

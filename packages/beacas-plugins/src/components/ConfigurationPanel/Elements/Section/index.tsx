@@ -88,9 +88,7 @@ function AttributesContainer({
           name="1"
           header={t("Setting")}
         >
-          {mode === ActiveTabKeys.DESKTOP && (
-            <AttributeField.Columns path={nodePath} name="" />
-          )}
+          <AttributeField.Columns mode={mode} path={nodePath} name="" />
           <ResponsiveField
             name=""
             component={AttributeField.Direction}

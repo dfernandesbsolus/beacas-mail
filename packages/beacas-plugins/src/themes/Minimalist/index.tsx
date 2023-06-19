@@ -1,20 +1,18 @@
 import {
+  BeacasEditor,
   CustomSlateEditor,
-  TextFormat,
-  toggleFormat,
   useEditorContext,
+  useEditorProps,
 } from "beacas-editor";
 import { useSlate } from "slate-react";
 import { EmailEditorProps } from "beacas-editor";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { ReactEditor } from "slate-react";
-import { MoreActionsMenusOverlay } from "./components/MoreActionsMenusOverlay";
 import { BlockMenusOverlay } from "./components/BlockMenusOverlay";
 import { ElementHover } from "./components/ElementHover";
 import styleText from "@beacas-plugins/assets/font/iconfont.css?inline";
 import minimaliststyleText from "./Minimalist.scss?inline";
-import { createPortal } from "react-dom";
 import { withTheme } from "./withTheme";
 import { ElementSelected } from "./components/ElementSelected";
 import { MergetagPopover } from "@beacas-plugins/components/MergetagPopover";
@@ -22,46 +20,43 @@ import { store } from "../../store";
 import { ColumnLayoutOverlay } from "@beacas-plugins/themes/Minimalist/components/ColumnLayoutOverlay";
 import { PluginsProvider } from "@beacas-plugins/components/Providers";
 import { SharedComponents } from "@beacas-plugins/components";
-const createConfig = ({
-  editor,
+import { ThemeConfigProps } from "@beacas-plugins/typings";
+import { createEditor } from "slate";
+import FullScreenLoading from "@beacas-plugins/components/FullScreenLoading";
+import { Card, Layout as ArcoLayout } from "@arco-design/web-react";
+import { AutoSelectElement } from "./components/AutoSelectElement";
+import { ElementPlaceholder } from "./components/ElementPlaceholder";
+
+const useCreateConfig = ({
   interactiveStyle,
   hoveringToolbar,
   ...rest
-}: {
-  editor: CustomSlateEditor;
-} & Omit<EmailEditorProps, "children">): Omit<EmailEditorProps, "children"> & {
-  editor: CustomSlateEditor;
-} => {
-  const onDOMBeforeInput = (event: InputEvent) => {
-    switch (event.inputType) {
-      case "formatBold":
-        event.preventDefault();
-        return toggleFormat(editor, TextFormat.BOLD);
-      case "formatItalic":
-        event.preventDefault();
-        return toggleFormat(editor, TextFormat.ITALIC);
-      case "formatUnderline":
-        event.preventDefault();
-        return toggleFormat(editor, TextFormat.UNDERLINE);
-    }
-  };
-
+}: Omit<ThemeConfigProps, "editor">): Omit<EmailEditorProps, "children"> &
+  Omit<EmailEditorProps, "children"> => {
+  const editor = useMemo(() => createEditor(), []) as CustomSlateEditor;
   return {
-    ...rest,
-    onDOMBeforeInput,
     editor: editor,
     withEnhanceEditor: withTheme,
+    ElementPlaceholder: ElementPlaceholder,
     ElementHover: ElementHover,
     ElementSelected: ElementSelected,
-    MergetagPopover,
+    MergetagPopover: MergetagPopover,
     interactiveStyle,
     hoveringToolbar,
+    newLineWithBr: false,
+    loading: <FullScreenLoading isFullScreen />,
+    ...rest,
   };
 };
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const editor = useSlate();
+const Layout: React.FC<{ children?: React.ReactNode; height: string }> = ({
+  children,
+  height,
+}) => {
   const { inited } = useEditorContext();
+  const { controller = true, showSidebar = false } = useEditorProps();
+
+  const editor = useSlate();
 
   const getRoot = () => {
     try {
@@ -82,26 +77,69 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
   }, []);
 
-  if (!root || !inited) return <>{children}</>;
+  const layoutContent = (
+    <SharedComponents.UniversalElementEditorDrawer>
+      <Card
+        style={{ padding: 0 }}
+        bodyStyle={{ padding: 0, overflow: "hidden" }}
+      >
+        <ArcoLayout
+          style={{
+            display: "flex",
+            width: "100%",
+            overflow: "hidden",
+          }}
+        >
+          {showSidebar && (
+            <ArcoLayout.Sider
+              style={{
+                minWidth: 300,
+                maxWidth: 400,
+                width: 400,
+                position: "relative",
+                zIndex: 1,
+              }}
+            >
+              <SharedComponents.BlockSideBar height={height} />
+            </ArcoLayout.Sider>
+          )}
+          <div
+            style={{
+              height: height,
+              maxWidth: "100%",
+              flex: showSidebar ? 1 : undefined,
+            }}
+          >
+            <SharedComponents.EditorTabs>
+              <BeacasEditor>
+                <style id="Retro-CSS">
+                  {styleText}
+                  {minimaliststyleText}
+                </style>
+              </BeacasEditor>
+
+              {children}
+            </SharedComponents.EditorTabs>
+          </div>
+        </ArcoLayout>
+      </Card>
+    </SharedComponents.UniversalElementEditorDrawer>
+  );
+  if (!root || !inited)
+    return <PluginsProvider>{layoutContent}</PluginsProvider>;
 
   return (
     <PluginsProvider>
-      {children}
+      {layoutContent}
       <SharedComponents.HoveringToolbar />
-      <MoreActionsMenusOverlay />
-      <BlockMenusOverlay />
+      {controller && <SharedComponents.Controller />}
+      <SharedComponents.Hotkeys />
       <ColumnLayoutOverlay />
-
-      {createPortal(
-        <style>
-          {styleText}
-          {minimaliststyleText}
-        </style>,
-        root.body
-      )}
-      <style>{styleText}</style>
+      <BlockMenusOverlay />
+      <AutoSelectElement />
+      <style>{styleText} </style>
     </PluginsProvider>
   );
 };
 
-export const Minimalist = { createConfig, Layout };
+export const Minimalist = { useCreateConfig, Layout };

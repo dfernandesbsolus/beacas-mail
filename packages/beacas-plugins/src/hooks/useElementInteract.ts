@@ -57,7 +57,12 @@ export const useElementInteract = () => {
 
       const newPageElement = BlockManager.getBlockByType(
         ElementType.PAGE
-      ).create();
+      ).create({
+        attributes: {
+          "background-color": "#f5f5f5",
+          "content-background-color": "#ffffff",
+        },
+      });
 
       pageElement.children.forEach((_, index) => {
         Transforms.removeNodes(editor, {

@@ -33,6 +33,7 @@ export interface BasicEditorProps
     value: string;
     label: string;
   }[];
+  clientId?: string;
   fontSizeList?: string[];
   localeData?: Record<string, string>;
   initialValues: EmailTemplate;

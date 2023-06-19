@@ -1,5 +1,11 @@
 # beacas-editor
 
+## 0.8.0
+
+### Minor Changes
+
+- update auth
+
 ## 0.7.0
 
 ### Minor Changes

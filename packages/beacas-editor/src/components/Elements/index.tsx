@@ -327,6 +327,7 @@ function ElementRender({
           </React.Fragment>
         );
       })}
+      {element.children.length === 0 && children}
     </Com>
   );
 }

@@ -1,6 +1,5 @@
-import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Transforms, Node, Editor, Text } from "slate";
+import { Transforms, Editor } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import styleText from "./MoreActionsMenusOverlay.scss?inline";
 
@@ -18,10 +17,27 @@ import {
   ElementType,
 } from "beacas-core";
 import { useRefState } from "beacas-editor";
-import { store } from "@beacas-plugins/store";
 
-export const MoreActionsMenusOverlay = observer(() => {
-  const { visible, top, left } = store.ui.moreActionsMenusOverlay;
+export interface MoreActionsMenusOverlayProps {
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
+  top: number;
+  left: number;
+  onToggleImageActionVisible: (ev: Event) => void;
+  moreIconRef: React.RefObject<HTMLDivElement | null>;
+}
+
+export const MoreActionsMenusOverlay = (
+  props: MoreActionsMenusOverlayProps
+) => {
+  const {
+    visible,
+    top,
+    left,
+    setVisible,
+    onToggleImageActionVisible,
+    moreIconRef,
+  } = props;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRefState(selectedIndex);
@@ -31,17 +47,17 @@ export const MoreActionsMenusOverlay = observer(() => {
     title: string;
     content: string;
     image: string;
-    onClick: (ev: Event) => any;
+    onPointerdown: (ev: Event) => any;
   }[] = useMemo(() => {
     return [
       {
         title: "Delete",
         content: "Del",
         image: deleteIcon,
-        onClick(ev) {
+        onPointerdown(ev) {
           ev.preventDefault();
           ev.stopPropagation();
-          store.ui.setMoreActionsMenusOverlayVisible(false);
+          setVisible(false);
           Transforms.removeNodes(editor);
         },
       },
@@ -49,41 +65,51 @@ export const MoreActionsMenusOverlay = observer(() => {
         title: "Duplicate",
         content: "Ctrl D",
         image: duplicateIcon,
-        onClick(ev) {
+        onPointerdown(ev) {
           ev.preventDefault();
           ev.stopPropagation();
           if (!editor.selection?.focus.path) return;
 
-          let node = Node.get(editor, editor.selection?.anchor.path);
-          let nodePath = ReactEditor.findPath(editor, node);
+          const nodeEntry = Editor.above(editor, {
+            at: editor.selection,
+            match: NodeUtils.isImageElement,
+          });
 
-          if (Text.isText(node)) {
-            [node, nodePath] = Editor.parent(editor, nodePath);
+          if (nodeEntry) {
+            setVisible(false);
+
+            Transforms.insertNodes(editor, cloneDeep(nodeEntry[0]));
+          } else {
+            console.log("nodeEntry not found");
           }
-          store.ui.setMoreActionsMenusOverlayVisible(false);
-
-          Transforms.insertNodes(editor, cloneDeep(node));
         },
       },
       {
         title: "Replace",
         content: "",
         image: replaceIcon,
-        onClick(ev) {
+        onPointerdown(ev) {
           ev.preventDefault();
           ev.stopPropagation();
           if (!editor.selection?.anchor.path) return;
-          let node = Node.get(editor, editor.selection.anchor.path);
-          if (Text.isText(node)) {
-            node = Node.parent(editor, editor.selection.anchor.path);
+          const nodeEntry = Editor.above(editor, {
+            at: editor.selection,
+            match: NodeUtils.isImageElement,
+          });
+          if (!nodeEntry) {
+            console.log("nodeEntry not found");
+            return;
           }
-          const domNode = ReactEditor.toDOMNode(editor, node);
+          const domNode = ReactEditor.toDOMNode(editor, nodeEntry[0]);
           const placeholderNode = domNode.querySelector(
-            ".standard-image"
+            ".beacas-image-action"
           ) as HTMLDivElement;
+
           if (placeholderNode) {
-            store.ui.setMoreActionsMenusOverlayVisible(false);
-            placeholderNode.click();
+            setVisible(false);
+            onToggleImageActionVisible(ev);
+          } else {
+            console.log("placeholderNode not found");
           }
         },
       },
@@ -91,7 +117,7 @@ export const MoreActionsMenusOverlay = observer(() => {
         title: "Full screen",
         content: "",
         image: screenIcon,
-        onClick(ev) {
+        onPointerdown(ev) {
           ev.preventDefault();
           ev.stopPropagation();
           const [nodeEntry] = Editor.nodes(editor, {
@@ -120,7 +146,7 @@ export const MoreActionsMenusOverlay = observer(() => {
         },
       },
     ];
-  }, [editor]);
+  }, [editor, onToggleImageActionVisible, setVisible]);
 
   const onChooseItem = useCallback(
     (node: Partial<Element>) => {
@@ -146,9 +172,9 @@ export const MoreActionsMenusOverlay = observer(() => {
         Transforms.insertNodes(editor, node as Element);
       }
 
-      store.ui.setBlockMenusOverlayVisible(false);
+      setVisible(false);
     },
-    [editor]
+    [editor, setVisible]
   );
 
   const onSelectItem = useCallback(
@@ -186,26 +212,41 @@ export const MoreActionsMenusOverlay = observer(() => {
       } else if (ev.code === "Enter") {
         ev.preventDefault();
         if (!filterOptions[selectedIndexRef.current]) return;
-        onSelectItem(ev, filterOptions[selectedIndexRef.current].onClick(ev));
+        onSelectItem(
+          ev,
+          filterOptions[selectedIndexRef.current].onPointerdown(ev)
+        );
       } else if (ev.code === "Escape") {
-        store.ui.setMoreActionsMenusOverlayVisible(false);
+        setVisible(false);
       }
     };
 
-    const onBlur = () => {
-      store.ui.setMoreActionsMenusOverlayVisible(false);
+    const onBlur = (ev: Event) => {
+      if (moreIconRef.current?.contains(ev.target as any)) return;
+
+      setVisible(false);
     };
 
     const root = ReactEditor.getWindow(editor);
-    root.addEventListener("mousedown", onBlur);
+    window.addEventListener("pointerdown", onBlur);
+    root.addEventListener("pointerdown", onBlur);
     root.addEventListener("blur", onBlur);
     root.addEventListener("keydown", onKeydown);
     return () => {
-      root.removeEventListener("mousedown", onBlur);
+      window.removeEventListener("pointerdown", onBlur);
+      root.removeEventListener("pointerdown", onBlur);
       root.removeEventListener("blur", onBlur);
       root.removeEventListener("keydown", onKeydown);
     };
-  }, [editor, filterOptionsRef, onSelectItem, selectedIndexRef, visible]);
+  }, [
+    editor,
+    filterOptionsRef,
+    moreIconRef,
+    onSelectItem,
+    selectedIndexRef,
+    setVisible,
+    visible,
+  ]);
 
   useEffect(() => {
     const domNode = document.querySelector(
@@ -219,15 +260,9 @@ export const MoreActionsMenusOverlay = observer(() => {
   }, [selectedIndex]);
 
   useEffect(() => {
-    if (!visible) {
-      store.ui.setSearch("");
-    }
-  }, [visible]);
-
-  useEffect(() => {
     setSelectedIndex(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store.ui.moreActionsMenusOverlay.visible]);
+  }, [visible]);
 
   if (!visible) return null;
 
@@ -235,13 +270,14 @@ export const MoreActionsMenusOverlay = observer(() => {
     <div className="action-list">
       {options.map((option, oIndex) => {
         const matchIndex = options.findIndex((o) => o.title === option.title);
+        const ImageIcon = option.image;
         return (
           <div
             className="action-list-item"
             key={oIndex}
             data-menu-index={oIndex}
             onMouseEnter={() => setSelectedIndex(matchIndex)}
-            onMouseDown={option.onClick as any}
+            onPointerDown={option.onPointerdown as any}
           >
             <div
               className={classnames(
@@ -250,7 +286,7 @@ export const MoreActionsMenusOverlay = observer(() => {
               )}
             >
               <div className="img">
-                <img src={option.image} alt="" />
+                <ImageIcon />
               </div>
               <div className="content">
                 <div className="title">{option.title}</div>
@@ -272,4 +308,4 @@ export const MoreActionsMenusOverlay = observer(() => {
       <style>{styleText}</style>
     </>
   );
-});
+};

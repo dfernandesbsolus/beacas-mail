@@ -25,6 +25,7 @@ import { SharedComponents } from "@beacas-plugins/components";
 import FullScreenLoading from "@beacas-plugins/components/FullScreenLoading";
 import { ThemeConfigProps } from "@beacas-plugins/typings";
 import { createEditor } from "slate";
+import { AutoDeselectElement } from "./components/AutoDeselectElement";
 
 const useCreateConfig = ({
   interactiveStyle,
@@ -92,7 +93,7 @@ const Layout: React.FC<{ children?: React.ReactNode; height: string }> = ({
               <SharedComponents.BlockSideBar height={height} />
             </ArcoLayout.Sider>
           )}
-          <div style={{ height: height, minWidth: 600, flex: 1 }}>
+          <div style={{ height: height, minWidth: 800, flex: 1 }}>
             <SharedComponents.EditorTabs>
               <BeacasEditor>
                 <style id="Retro-CSS">
@@ -117,6 +118,7 @@ const Layout: React.FC<{ children?: React.ReactNode; height: string }> = ({
       <SharedComponents.HoveringToolbar />
       {controller && <SharedComponents.Controller />}
       <SharedComponents.Hotkeys />
+      <AutoDeselectElement />
       <style>{styleText}</style>
     </PluginsProvider>
   );

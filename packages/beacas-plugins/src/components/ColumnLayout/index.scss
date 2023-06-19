@@ -1,47 +1,47 @@
 .ColumnLayoutItemList * {
   box-sizing: border-box;
+}
 
-  .ColumnLayoutItem {
-    position: relative;
-    cursor: pointer;
-    color: rgb(85, 85, 85);
-    &:hover {
-      color: var(--hover-color);
-    }
-    .ColumnLayoutItemOuter {
-      position: relative;
-      width: 100%;
-      z-index: 1;
-      // padding: 10px;
-      // border: 1px solid rgb(229, 229, 229);
-    }
-    .ColumnLayoutItemInner {
-      height: 36px;
-      border: 2px solid currentColor;
-      border-radius: 3px;
-      overflow: hidden;
-      display: flex;
-    }
-    .ColumnLayoutItemInnerPart {
-      border-right: 2px solid currentColor;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-  .ColumnLayoutItemSelected {
-    color: var(--selected-color);
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background-color: var(--selected-color);
-      z-index: 0;
-      opacity: 0.1;
-    }
-  }
+.ColumnLayoutItem {
+  position: relative;
+  cursor: pointer;
+  color: rgb(85, 85, 85);
+}
+.ColumnLayoutItem:hover {
+  color: #41a1e6;
+}
+.ColumnLayoutItemSelected {
+  color: #41a1e6;
+}
+.ColumnLayoutItemSelected ::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 0;
+  opacity: 0.1;
+}
+
+.ColumnLayoutItemOuter {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  // padding: 10px;
+  // border: 1px solid rgb(229, 229, 229);
+}
+.ColumnLayoutItemInner {
+  height: 36px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+.ColumnLayoutItemInnerPart {
+  border-right: 2px solid currentColor;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

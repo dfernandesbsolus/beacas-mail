@@ -37,12 +37,6 @@ import 'beacas-plugins/lib/style.css';
 // Theme style, If you need to change the theme, you can make a duplicate in https://arco.design/themes/design/6979/setting/base/Color
 import '@arco-themes/react-beacas-theme-retro/css/arco.css';
 
-// fill clientId to authenticate. If you haven't registered yet,
-// visit https://admin.beacas.com/ to get the clientId
-BeacasCore.auth({
-  clientId: "xxx",
-});
-
 export default function MyEditor() {
 
   // You can fetch data from the server.
@@ -66,6 +60,7 @@ const config = Retro.useCreateConfig({
   onUpload,
   initialValues: initialValues,
   onSubmit: onSubmit,
+  clientId: "", // optional, for paid user
 })
 
   return (
@@ -77,17 +72,6 @@ const config = Retro.useCreateConfig({
   );
 }
 ```
-
-## NOTE
-
-Please note that the Beacas Email editor includes four packages:
-
-- Beacas-core (core component responsible for JSON to MJML conversion)
-- Beacas-editor (binding between MJML and Slate)
-- Beacas-plugins (UI customization component, contains all UI-related code)
-- Beacas-localization (translation component)
-
-It is important to mention that Beacas-core is closed source.
 
 ## Docs
 

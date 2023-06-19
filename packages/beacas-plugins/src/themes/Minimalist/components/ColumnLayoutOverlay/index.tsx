@@ -1,13 +1,7 @@
 import { Modal } from "@arco-design/web-react";
 import { SharedComponents } from "@beacas-plugins/components";
 import { store } from "@beacas-plugins/store";
-import {
-  BlockManager,
-  ElementCategory,
-  ElementType,
-  NodeUtils,
-  t,
-} from "beacas-core";
+import { BlockManager, ElementType, NodeUtils, t } from "beacas-core";
 import { observer } from "mobx-react";
 import React, { useState } from "react";
 import { Editor, Path, Transforms } from "slate";
@@ -19,7 +13,12 @@ export const ColumnLayoutOverlay = observer(() => {
   const editor = useSlate();
 
   const onAddColumns = () => {
-    const columnBlock = BlockManager.getBlockByType("standard-column");
+    const columnBlock = BlockManager.getBlockByType(
+      ElementType.STANDARD_COLUMN
+    );
+    const textBlock = BlockManager.getBlockByType(
+      ElementType.STANDARD_PARAGRAPH
+    );
 
     const row = BlockManager.getBlockByType(
       ElementType.STANDARD_SECTION
@@ -29,26 +28,43 @@ export const ColumnLayoutOverlay = observer(() => {
           attributes: {
             width: width,
           },
-          children: [],
+          children: [
+            textBlock.create({
+              children: [{ text: "" }],
+            }),
+          ],
         });
       }),
     });
 
     const rowEleEntry = Editor.above(editor, {
       match: (n) => {
-        if (NodeUtils.isBlockElement(n)) {
-          const block = BlockManager.getBlockByType(n.type);
-
-          return block.category.includes(ElementCategory.SECTION);
-        }
-        return false;
+        return NodeUtils.isSectionElement(n);
       },
     });
 
     if (rowEleEntry) {
+      const nextPath = Path.next(rowEleEntry[1]);
       Transforms.insertNodes(editor, row, {
-        at: Path.next(rowEleEntry[1]),
+        at: nextPath,
       });
+
+      if (rowEleEntry[0].children.length === 1) {
+        const textEleEntry = Editor.above(editor, {
+          match: (n) => {
+            if (NodeUtils.isBlockElement(n)) {
+              return NodeUtils.isContentElement(n);
+            }
+            return false;
+          },
+        });
+
+        if (textEleEntry) {
+          Transforms.delete(editor, {
+            at: textEleEntry[1],
+          });
+        }
+      }
 
       store.ui.serColumnsOverlayVisible(false);
     }
@@ -63,9 +79,9 @@ export const ColumnLayoutOverlay = observer(() => {
       }
       visible={visible}
       alignCenter={false}
-      closable={false}
       hideCancel
       okText={t("Add Column Layout")}
+      onCancel={() => store.ui.serColumnsOverlayVisible(false)}
       onOk={onAddColumns}
     >
       <div style={{ minHeight: 300 }}>

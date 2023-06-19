@@ -261,12 +261,15 @@ export class SocialItem extends BaseElement<SocialElement> {
 
     const tdIconAttributes = this.htmlAttributes({ style: "icon" });
 
+    const tdAttributes = this.htmlAttributes({ style: "tdText" }) as any;
+
     const hasContentText = (
       this.props.element.children[0] as TextNode
     )?.text.trim();
 
     const content = (
       <tr
+        {...this.props.attributes}
         {...this.htmlAttributes({
           class: this.getAttribute("css-class"),
         })}
@@ -288,30 +291,37 @@ export class SocialItem extends BaseElement<SocialElement> {
             </tbody>
           </table>
         </td>
-        {hasContentText ? (
-          <td {...this.htmlAttributes({ style: "tdText" })}>
-            {hasLink ? (
-              <a
-                {...this.htmlAttributes({
-                  href,
-                  style: "text",
-                  rel: this.getAttribute("rel"),
-                  target: this.getAttribute("target"),
-                })}
-              >
-                {this.renderChildrenWithPlaceholder()}
-              </a>
-            ) : (
-              <span
-                {...this.htmlAttributes({
-                  style: "text",
-                })}
-              >
-                {this.renderChildrenWithPlaceholder()}
-              </span>
-            )}
-          </td>
-        ) : null}
+
+        <td
+          {...tdAttributes}
+          style={{
+            ...(tdAttributes.style || {}),
+            width: hasContentText ? undefined : "0px",
+            overflow: hasContentText ? undefined : "hidden",
+            padding: hasContentText ? undefined : "0px",
+          }}
+        >
+          {hasLink ? (
+            <a
+              {...this.htmlAttributes({
+                href,
+                style: "text",
+                rel: this.getAttribute("rel"),
+                target: this.getAttribute("target"),
+              })}
+            >
+              {this.renderChildrenWithPlaceholder()}
+            </a>
+          ) : (
+            <span
+              {...this.htmlAttributes({
+                style: "text",
+              })}
+            >
+              {this.renderChildrenWithPlaceholder()}
+            </span>
+          )}
+        </td>
       </tr>
     );
 

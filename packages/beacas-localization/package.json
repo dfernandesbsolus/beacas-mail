@@ -2,7 +2,7 @@
   "name": "beacas-localization",
   "license": "MIT",
   "description": "Beacas editor localization",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "keywords": [],
   "files": [
     "locales"

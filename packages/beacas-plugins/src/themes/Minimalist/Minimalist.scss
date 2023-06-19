@@ -60,5 +60,16 @@
     caret-color: rgb(55, 53, 47);
     color: rgb(55, 53, 47);
     -webkit-text-fill-color: rgba(55, 53, 47, 0.5);
+    width: 100%;
+    left: 0;
+    text-align: center;
+    font-style: normal;
+    font-weight: normal;
+  }
+}
+
+[data-empty-src="true"] {
+  td > img {
+    display: none !important;
   }
 }

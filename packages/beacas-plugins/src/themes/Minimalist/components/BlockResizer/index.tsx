@@ -54,10 +54,10 @@ export const BlockResizer = ({
     >;
     const maxWidth = parentNodeClientRect.width;
     const initialWidth = Math.min(
-      parseFloat(clientRect.width.toString()),
+      parseInt(clientRect.width.toString()),
       maxWidth
     );
-    const initialHeight = Math.min(parseFloat(clientRect.height.toString()));
+    const initialHeight = Math.min(parseInt(clientRect.height.toString()));
 
     onDrag({
       contentWindow: ReactEditor.getWindow(editor),
@@ -66,7 +66,7 @@ export const BlockResizer = ({
         if (direction === "left" || direction === "right") {
           const diffX = direction === "left" ? -x : x;
           cloneAttributes.width =
-            parseFloat(
+            parseInt(
               Math.max(
                 20,
                 Math.min(initialWidth + diffX * horizontalScale, maxWidth)
@@ -77,11 +77,11 @@ export const BlockResizer = ({
             cloneAttributes.width =
               Math.min(
                 100,
-                parseFloat(
+                parseInt(
                   (
-                    (parseFloat(cloneAttributes.width) / initialWidth) *
+                    (parseInt(cloneAttributes.width) / initialWidth) *
                     horizontalScale *
-                    parseFloat((element.attributes as any).width!)
+                    parseInt((element.attributes as any).width!)
                   ).toString()
                 )
               ) + "%";
@@ -106,11 +106,11 @@ export const BlockResizer = ({
 
             if (prevColumn) {
               const diffWidth =
-                parseFloat((element.attributes as any).width) -
-                parseFloat(cloneAttributes.width);
+                parseInt((element.attributes as any).width) -
+                parseInt(cloneAttributes.width);
 
               const prevColumnWidth =
-                parseFloat(prevColumn.attributes.width || "100") +
+                parseInt(prevColumn.attributes.width || "100") +
                 diffWidth +
                 "%";
               const prevColumnPath = ReactEditor.findPath(editor, prevColumn);
@@ -128,7 +128,7 @@ export const BlockResizer = ({
         } else {
           const diffY = direction === "top" ? -y : y;
           cloneAttributes.height =
-            parseFloat(
+            parseInt(
               Math.min(
                 100,
                 Math.max(10, Math.min(initialHeight + diffY * verticalScale))
