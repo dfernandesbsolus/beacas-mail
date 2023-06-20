@@ -11,6 +11,9 @@ Build marketing campaigns, newsletters, or transactional emails effortlessly wit
   <img src="./templates.png" style="display:inline-block;width:98%"/>
 </div>
 
+## Community
+Joining [Slack](https://join.slack.com/t/beacashq/shared_invite/zt-1x0f399h2-9cw8JhBu~kkSpVDcK2iKYg)  grants you full access and privileges.
+
 ## Live Demo
 
 Check out the live demo here https://demo.beacas.com
